@@ -9,8 +9,33 @@ public class DatabaseHandler {
     private static final String USER = "postgres";
     private static final String PASSWORD = "123456";
 
-    public Connection connect() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+    private static Connection connection; // Единственное соединение (Singleton)
+
+    // Подключение к БД (синглтон)
+    public Connection connect() {
+        if (connection == null) {
+            try {
+                connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                System.out.println("Database connected successfully!");
+            } catch (SQLException e) {
+                System.err.println("Database connection failed: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        return connection;
+    }
+
+    // Закрытие соединения
+    public void closeConnection() {
+        if (connection != null) {
+            try {
+                connection.close();
+                System.out.println("Database connection closed.");
+                connection = null;
+            } catch (SQLException e) {
+                System.err.println("Failed to close the database connection: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
 }
-
